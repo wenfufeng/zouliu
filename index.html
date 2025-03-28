@@ -15,14 +15,14 @@
     }
 
     body {
-      background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1600&q=80') no-repeat center center fixed;
+      background: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYKB8l8Shto7ZXNCA4mCHgR9KDZ_Wn-T3QkA&s') no-repeat center center fixed;
       background-size: cover;
     }
 
     .blur-overlay {
       position: absolute;
       top: 0; left: 0; right: 0; bottom: 0;
-      backdrop-filter: blur(6px);
+      backdrop-filter: blur(8px);
       background: rgba(0,0,0,0.4);
       z-index: 1;
     }
@@ -32,12 +32,14 @@
       top: 50%; left: 50%;
       transform: translate(-50%, -50%);
       color: white;
-      font-size: 2.5em;
+      font-size: 2.8em;
       font-weight: bold;
       z-index: 3;
       text-align: center;
-      text-shadow: 0 0 12px #fff, 2px 2px 4px rgba(0,0,0,0.6);
+      text-shadow: 0 0 12px #fff, 2px 2px 6px rgba(0,0,0,0.6);
       padding: 0 1rem;
+      line-height: 1.4;
+      white-space: pre-line;
     }
 
     canvas {
@@ -50,14 +52,18 @@
 </head>
 <body>
   <div class="blur-overlay"></div>
-  <div class="message" id="message">程走柳 生辰快乐</div>
+  <div class="message" id="message">程走柳\n生辰快乐</div>
   <canvas id="fireworks"></canvas>
 
   <script>
     const expirationDate = new Date("2025-04-11T00:00:00");
     const now = new Date();
+    const messageDiv = document.getElementById("message");
+
     if (now > expirationDate) {
-      document.getElementById("message").innerText = "链接已失效";
+      messageDiv.innerText = "链接已失效";
+    } else {
+      messageDiv.innerText = "程走柳\n生辰快乐";
     }
 
     const canvas = document.getElementById("fireworks");
