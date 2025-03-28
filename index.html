@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>程走柳 生辰快乐</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Segoe UI', sans-serif;
+      background: black;
+    }
+
+    body {
+      background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1600&q=80') no-repeat center center fixed;
+      background-size: cover;
+    }
+
+    .blur-overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      backdrop-filter: blur(6px);
+      background: rgba(0,0,0,0.4);
+      z-index: 1;
+    }
+
+    .message {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-size: 2.5em;
+      font-weight: bold;
+      z-index: 3;
+      text-align: center;
+      text-shadow: 0 0 12px #fff, 2px 2px 4px rgba(0,0,0,0.6);
+      padding: 0 1rem;
+    }
+
+    canvas {
+      position: absolute;
+      top: 0; left: 0;
+      z-index: 2;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="blur-overlay"></div>
+  <div class="message" id="message">程走柳 生辰快乐</div>
+  <canvas id="fireworks"></canvas>
+
+  <script>
+    const expirationDate = new Date("2025-04-11T00:00:00");
+    const now = new Date();
+    if (now > expirationDate) {
+      document.getElementById("message").innerText = "链接已失效";
+    }
+
+    const canvas = document.getElementById("fireworks");
+    const ctx = canvas.getContext("2d");
+
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
+
+    window.addEventListener('resize', () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    });
+
+    class Particle {
+      constructor(x, y, color) {
+        this.x = x;
+        this.y = y;
+        this.speed = Math.random() * 5 + 1;
+        this.angle = Math.random() * Math.PI * 2;
+        this.gravity = 0.05;
+        this.alpha = 1;
+        this.fade = Math.random() * 0.01 + 0.01;
+        this.color = color;
+        this.vx = Math.cos(this.angle) * this.speed;
+        this.vy = Math.sin(this.angle) * this.speed;
+      }
+
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.vy += this.gravity;
+        this.alpha -= this.fade;
+        return this.alpha <= 0;
+      }
+
+      draw() {
+        ctx.save();
+        ctx.globalAlpha = this.alpha;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    class Firework {
+      constructor() {
+        this.x = Math.random() * width;
+        this.y = height;
+        this.tx = Math.random() * width;
+        this.ty = Math.random() * height * 0.5;
+        this.speed = 5;
+        this.angle = Math.atan2(this.ty - this.y, this.tx - this.x);
+        this.distance = Math.hypot(this.tx - this.x, this.ty - this.y);
+        this.traveled = 0;
+        this.color = `hsl(${Math.floor(Math.random() * 360)}, 100%, 60%)`;
+      }
+
+      update() {
+        const vx = Math.cos(this.angle) * this.speed;
+        const vy = Math.sin(this.angle) * this.speed;
+        this.x += vx;
+        this.y += vy;
+        this.traveled += this.speed;
+
+        if (this.traveled >= this.distance) {
+          for (let i = 0; i < 50; i++) {
+            particles.push(new Particle(this.tx, this.ty, this.color));
+          }
+          return true;
+        }
+        return false;
+      }
+
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, 2.5, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+      }
+    }
+
+    let fireworks = [];
+    let particles = [];
+
+    function loop() {
+      requestAnimationFrame(loop);
+      ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
+      ctx.fillRect(0, 0, width, height);
+
+      if (Math.random() < 0.04) {
+        fireworks.push(new Firework());
+      }
+
+      fireworks = fireworks.filter(f => {
+        f.draw();
+        return !f.update();
+      });
+
+      particles = particles.filter(p => {
+        p.draw();
+        return !p.update();
+      });
+    }
+
+    loop();
+  </script>
+</body>
+</html>
